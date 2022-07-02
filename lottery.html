@@ -9,6 +9,7 @@
     }
     button{
       font-size: 22px;
+      cursor: pointer;
     }
     .lottery-nums{
       overflow: hidden;
@@ -27,6 +28,7 @@
       line-height: 25px;
       margin-right: 10px;
       margin-bottom: 10px;
+      cursor: pointer;
     }
 
     .lottery-nums .selected{
@@ -38,10 +40,59 @@
       background-color: red;
       color: #fff;
     }
+    .lottery-nums .disabled{
+      border-color: #d2d0d0;
+      color: #d2d0d0;
+    }
 
     .lottery-nums .selected.highlight{
       background-color: yellow;
       color: #333;
+    }
+
+    .mask {
+      position: fixed;
+      display: none;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.66);
+      z-index: 2000;
+      top: 0;
+      left: 0;
+    }
+
+    .mask.active {
+      display: block;
+    }
+
+    .dialog-box {
+      display: block;
+      position: relative;
+      top: 20%;
+      width: 40%;
+      min-height: 50px;
+      padding: 30px;
+      margin: auto;
+      background-color: #fff;
+      border: 1px solid #333;
+      font-size: 18px;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    .dialog-box .content {
+      display: block;
+      width: 95%;
+      height: auto;
+      overflow: hidden;
+    }
+
+    .dialog-box .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 36px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -50,14 +101,25 @@
   <div class="wrap">
 
     <div class="lottery-nums"></div>
+    <div class="lottery-select">你選的號碼: <span></span></div>
     <div class="lottery-result">開獎號碼: <span></span></div>
 
     <p>
-      <button class="btn-lottery">兌獎</button>
-      <button class="reset">重設</button>
+      <button class="btn-lottery" disabled>兌獎</button>
+      <button class="reset" disabled>重設</button>
     </p>
 
   </div>
+
+
+  <!-- 燈箱 -->
+  <div class="mask">
+    <div class="dialog-box">
+      <a class="close">&times;</a>
+      <div class="content"></div>
+    </div>
+  </div>
+  <!-- 燈箱 -->
 
   <script src="./jquery-3.6.0.js"></script>
   <script type="text/javascript">
@@ -68,18 +130,71 @@
     $('.lottery-nums').append('<div>' + i + '</div>');
   }
 
-  // 1. 為數字按鈕加入事件
-  $('.lottery-nums div').on('click', () => {
+  let selectNums=[]
+  // 數字按鈕事件
+  $('.lottery-nums div').on('click', function(){
+    if(selectNums.length<6){
+      $(this).addClass('highlight')
+      selectNums.push(Number($(this).text()))
+      $('.lottery-select > span').text(selectNums)
+      if(selectNums.length>0){
+        $('.reset').prop('disabled',false)
+      }
+      if(selectNums.length===6){
+        $('.btn-lottery').prop('disabled',false)
+        $('.lottery-nums').children().not('.highlight').addClass('disabled')
+      }
+    }
   });
 
+  // 重設函式
+  function reset(){
+    selectNums=[]
+    lottery=[]
+    $('.lottery-nums div').removeClass('highlight')
+    $('.lottery-nums div').removeClass('disabled')
+    $('.lottery-select > span').empty()
+    $('.lottery-result > span').empty()
+    $('.reset').prop('disabled',true)
+    $('.btn-lottery').prop('disabled',true)
+  }
+
   // 重設按鈕
-  $('.reset').on('click', () => {
+  $('.reset').on('click', function(){
+    reset()
   });
 
   // 兌獎按鈕
-  $('.btn-lottery').on('click', () => {
+  $('.btn-lottery').on('click', function(){
+    //產出樂透數字
+    let lottery=[]
+    while(lottery.length<6){
+      const n = Math.floor(Math.random()*49)+1
+      if(!lottery.includes(n)){
+        lottery.push(n)
+      }
+    }
+    $('.lottery-result > span').text(lottery)
+
+    //看中了幾個數字
+    winNum=0
+    selectNums.map((el)=>{
+      if(lottery.includes(el)){
+        winNum+=1
+      }
+    })
+
+    //開啟燈箱
+    $('.mask').addClass('active')
+    $('.mask .content').text(`恭喜你!中了${winNum}個號碼!`)
+
   });
 
+  //關閉燈箱
+  $('.dialog-box .close').on('click', function () {
+    $('.mask').removeClass('active')
+    reset()
+  });
   </script>
 
 </body>
