@@ -32,6 +32,7 @@
       line-height: 25px;
       margin-right: 10px;
       margin-bottom: 10px;
+      cursor: pointer;
     }
 
     .lottery-nums .selected {
@@ -67,7 +68,13 @@
 
   <script src="./jquery-3.6.0.js"></script>
   <script type="text/javascript">
+    let lottery = [], number, n;
     let i;
+
+    // while (lottery.length < 6) {
+    //   number = Math.floor(Math.random() * 49);
+
+    // }
 
     // 產生 49 顆按鈕
     for (i = 1; i < 50; i++) {
@@ -77,15 +84,21 @@
     // 1. 為數字按鈕加入事件
     $('.lottery-nums div').on('click', (e) => {
       const currentCount = $(e.currentTarget);
-      if () {
-        alert("Hello! I am an alert box!!");
-      } else {
+      if ($('.selected').length < 6) {
         currentCount.addClass('selected');
+      } else {
+        alert("Already selected 6 numbers");
       }
+    });
+
+    // 開獎
+    $('.btn-lottery').on('click', () => {
+      $('.lottery-nums div').addClass('highlight');
     });
 
     // 重設按鈕
     $('.reset').on('click', () => {
+      $('.lottery-nums div').removeClass('selected highlight');
     });
 
     // 兌獎按鈕
