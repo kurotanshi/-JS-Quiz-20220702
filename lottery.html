@@ -1,24 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>五倍樂透手動選號機</title>
   <style type="text/css">
-    .wrap{
+    .wrap {
       padding: 1em;
     }
-    button{
+
+    button {
       font-size: 22px;
     }
-    .lottery-nums{
+
+    .lottery-nums {
       overflow: hidden;
       width: 600px;
     }
 
-    .lottery-nums > div{
-      display: block; float: left;
-      width: 25px; height: 25px;
+    .lottery-nums>div {
+      display: block;
+      float: left;
+      width: 25px;
+      height: 25px;
       border: 1px solid #999;
+      border-radius: 50%;
       background-color: #fff;
       color: #555;
       font-size: 20px;
@@ -29,22 +35,23 @@
       margin-bottom: 10px;
     }
 
-    .lottery-nums .selected{
-      background-color: green;
+    .lottery-nums .selected {
+      background-color: rgb(146, 184, 146);
       color: #fff;
     }
 
-    .lottery-nums .highlight{
-      background-color: red;
+    .lottery-nums .highlight {
+      background-color: rgb(220, 84, 109);
       color: #fff;
     }
 
-    .lottery-nums .selected.highlight{
-      background-color: yellow;
+    .lottery-nums .selected.highlight {
+      background-color: rgb(248, 248, 100);
       color: #333;
     }
   </style>
 </head>
+
 <body>
 
   <div class="wrap">
@@ -61,26 +68,117 @@
 
   <script src="./jquery-3.6.0.js"></script>
   <script type="text/javascript">
-  let i;
 
-  // 產生 49 顆按鈕
-  for(i = 1; i < 50; i++ ){
-    $('.lottery-nums').append('<div>' + i + '</div>');
-  }
 
-  // 1. 為數字按鈕加入事件
-  $('.lottery-nums div').on('click', () => {
-  });
+    let i, j;
+    let box = [];     // 存放全部的樂透球
+    let pick = [];    // 存放玩家的選號
+    let lottery = []; // 存放中獎結果
+    let hit = [];     // 存放猜中的號碼
 
-  // 重設按鈕
-  $('.reset').on('click', () => {
-  });
 
-  // 兌獎按鈕
-  $('.btn-lottery').on('click', () => {
-  });
+    // 產生 49 顆按鈕，並將 49 個號碼丟到 box 裡
+    for (i = 1; i < 50; i++) {
+      $('.lottery-nums').append('<div>' + i + '</div>');
+      box.push(i);
+    }
+
+
+    // 重置所有設定
+    const reset = () => {
+      box.length = 0;
+      pick.length = 0;
+      lottery.length = 0;
+      hit.length = 0;
+
+      for (i = 1; i < 50; i++) {
+        box.push(i);
+      }
+
+      $('.lottery-nums div').removeClass('selected highlight selected.highlight');
+      $('.lottery-result > span').text("");
+    }
+
+
+    // 1. 為數字按鈕加入事件
+    $('.lottery-nums div').on('click', (e) => {
+
+      if (lottery.length === 0) {
+
+        // 設 num 為滑鼠點擊到的數字
+        const num = Number($(e.currentTarget).text());
+
+        // 如果選取的數字沒有被選過，且未選滿6個號碼，就會選取該號碼，將其上色，並放入玩家選號列中
+        if (!pick.includes(num) && pick.length < 6) {
+          $(e.currentTarget).addClass('selected');
+          pick.push(Number(num))
+        }
+
+        // 如果點選的數字已經被選取過了，再次點擊它會將其從玩家選號列中刪掉並取消上色
+        else if (pick.includes(num)) {
+          $(e.currentTarget).removeClass('selected')
+          pick.forEach((element, index, array) => {
+            if (num === element) {
+              pick.splice(index, 1)
+            }
+          });
+        }
+      }
+    });
+
+
+    // 重設按鈕
+    $('.reset').on('click', function () {
+      reset();
+    });
+
+
+    // 兌獎按鈕
+    $('.btn-lottery').on('click', () => {
+
+      if (pick.length != 6) {
+        alert('要選完六個數字才可以對獎喔！');
+      }
+
+      else if (lottery.length != 0) {
+        alert('請重新選過再來吧！');
+        // reset();
+      }
+
+      else {
+        // 隨機抽6個數字作為樂透的幸運號碼，並存到 lottery 陣列中
+        for (i = 0; i <= 5; i++) {
+          const n = Math.floor(Math.random() * (49 - i));
+          lottery.push(Number(box.splice(n, 1)));
+        }
+
+        // 當 lottery 中的號碼與 pick 裡的玩家選號相同時，表示中了該號，要把該號標成黃色
+        // 其它不在玩家選號的號碼則標上紅色
+        for (let j in lottery) {
+          $('.lottery-nums div').each((index, value) => {
+            if (pick.includes(lottery[j]) && lottery[j] === Number($(value).text())) {
+              $(value).addClass('selected highlight');
+              hit.push($(value).text()); // 將猜中的號碼放到 hit 裡
+            }
+            else if (lottery[j] === Number($(value).text())) {
+              $(value).addClass('highlight');
+            }
+          }
+          )
+        }
+
+        // 將 lottery and hit 陣列裡的數字做排序
+        lottery.sort((a, b) => { return a - b; })
+        hit.sort((a, b) => { return a - b; })
+
+        $('.lottery-result > span').text(lottery);
+
+        (hit.length === 0) ? alert('摃龜！！！') : alert('你中的號碼為：' + hit + '，共 ' + hit.length + ' 號');
+      }
+    });
 
   </script>
 
 </body>
+
 </html>
