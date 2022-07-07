@@ -71,9 +71,15 @@
     let lottery = [], number, n;
     let i;
 
-    // while (lottery.length < 6) {
-    //   number = Math.floor(Math.random() * 49);
-    // }
+    while (lottery.length < 6) {
+      number = parseInt(Math.random() * 49 + 1, 10);
+
+      if (lottery.indexOf(number) === -1) {
+        lottery.push(number);
+      }
+    };
+
+    console.log('lottery: ', lottery);
 
     // 產生 49 顆按鈕
     for (i = 1; i < 50; i++) {
@@ -92,7 +98,14 @@
 
     // 開獎
     $('.btn-lottery').on('click', () => {
-      $('.lottery-nums div').addClass('highlight');
+
+
+      $('.lottery-nums > div').each(function(idx, elem){
+        const currentNum = Number($(elem).text());
+        if(lottery.includes(currentNum) === true) {
+          $(elem).addClass('highlight');
+        }
+      })
     });
 
     // 重設按鈕
