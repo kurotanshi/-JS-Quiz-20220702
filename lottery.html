@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>五倍樂透手動選號機</title>
   <style type="text/css">
-    .wrap{
+    .wrap {
       padding: 1em;
     }
-    button{
+
+    button {
       font-size: 22px;
     }
-    .lottery-nums{
+
+    .lottery-nums {
       overflow: hidden;
       width: 600px;
     }
 
-    .lottery-nums > div{
-      display: block; float: left;
-      width: 25px; height: 25px;
+    .lottery-nums>div {
+      display: block;
+      float: left;
+      width: 25px;
+      height: 25px;
       border: 1px solid #999;
       background-color: #fff;
       color: #555;
@@ -27,24 +32,26 @@
       line-height: 25px;
       margin-right: 10px;
       margin-bottom: 10px;
+      cursor: pointer;
     }
 
-    .lottery-nums .selected{
+    .lottery-nums .selected {
       background-color: green;
       color: #fff;
     }
 
-    .lottery-nums .highlight{
+    .lottery-nums .highlight {
       background-color: red;
       color: #fff;
     }
 
-    .lottery-nums .selected.highlight{
+    .lottery-nums .selected.highlight {
       background-color: yellow;
       color: #333;
     }
   </style>
 </head>
+
 <body>
 
   <div class="wrap">
@@ -61,26 +68,69 @@
 
   <script src="./jquery-3.6.0.js"></script>
   <script type="text/javascript">
-  let i;
+    let lottery = [];
+    let number;
+    let n;
+    let i;
 
-  // 產生 49 顆按鈕
-  for(i = 1; i < 50; i++ ){
-    $('.lottery-nums').append('<div>' + i + '</div>');
-  }
+    // 產生 49 顆按鈕
+    for (i = 1; i < 50; i++) {
+      $('.lottery-nums').append('<div>' + i + '</div>');
+    }
 
-  // 1. 為數字按鈕加入事件
-  $('.lottery-nums div').on('click', () => {
-  });
+    // 1. 為數字按鈕加入事件
+    $('.lottery-nums div').on('click', (e) => {
+      const currentCount = $(e.currentTarget);
+      if ($('.selected').length < 6) {
+        currentCount.addClass('selected');
+      } else {
+        alert("Already selected 6 numbers");
+      }
+    });
 
-  // 重設按鈕
-  $('.reset').on('click', () => {
-  });
+    // 開獎
+    while (lottery.length < 6) {
+      number = parseInt(Math.random() * 49 + 1, 10);
+      if (lottery.indexOf(number) === -1) {
+        lottery.push(number);
+      }
+    };
 
-  // 兌獎按鈕
-  $('.btn-lottery').on('click', () => {
-  });
+    console.log('lottery: ', lottery);
+
+    // 重設按鈕
+    $('.reset').on('click', () => {
+      $('.lottery-nums div').removeClass('selected highlight');
+    });
+
+    // 兌獎按鈕
+    $('.btn-lottery').on('click', () => {
+      $('.lottery-nums div').removeClass('highlight');
+      $('.lottery-nums > div').each(function(idx, elem){
+        const currentNum = Number($(elem).text());
+        if(lottery.includes(currentNum) === true) {
+          $(elem).addClass('highlight');
+        }
+      })
+    });
+
+      // 用來存開獎出來的樂透號碼
+      let newNumbers = '';
+    
+      // 撈出開獎號碼並加上逗號讓數字分開
+      for (let n = 0; n < lottery.length; n++) {
+        newNumbers += lottery[n];
+        if (n < 5) {
+          new_numbers += ',';
+        }
+      };
+    
+    // 把開獎號碼印到<span>標籤裡
+    $('span').text(new_numbers);
+
 
   </script>
 
 </body>
+
 </html>
