@@ -68,12 +68,13 @@
 
   <script src="./jquery-3.6.0.js"></script>
   <script type="text/javascript">
-    let lottery = [], number, n;
+    let lottery = [];
+    let number;
+    let n;
     let i;
 
     while (lottery.length < 6) {
       number = parseInt(Math.random() * 49 + 1, 10);
-
       if (lottery.indexOf(number) === -1) {
         lottery.push(number);
       }
@@ -98,8 +99,6 @@
 
     // 開獎
     $('.btn-lottery').on('click', () => {
-
-
       $('.lottery-nums > div').each(function(idx, elem){
         const currentNum = Number($(elem).text());
         if(lottery.includes(currentNum) === true) {
